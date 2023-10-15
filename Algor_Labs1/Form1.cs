@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Diagnostics;
 
 namespace Algor_Labs1
 {
@@ -28,80 +29,169 @@ namespace Algor_Labs1
 
         void matrix_count()
         {
-            int N = 10000; // Количество строк и столбцов
+            chart1.Series[0].Points.Clear();
 
-            // Создайте матрицу и инициализируйте её случайными числами (для примера)
-            int[,] A = new int[N, N];
-            Random random = new Random();
-
-            switch (comboBox1.Text)
+            for (int n = 1000; n <= 10000; n += 1000)
             {
-                case ("Случайное формирование данных"):
-                    for (int i = 0; i < N; i++)
-                    {
-                        for (int j = 0; j < N; j++)
-                        {
-                            A[i, j] = random.Next(int.MinValue, int.MaxValue); // Генерируйте случайные числа от -10 до 10
-                        }
-                    }
-                    break;
+                var stopwatch = new Stopwatch();
+                int N = n; // Количество строк и столбцов
 
-                case ("Минимизация числа вычислений"):
-                    /*
-                    создаем матрицу, в которой все элементы равны 0, 
-                    за исключением элементов,
-                    стоящих на пересечении нечетных строк и столбцов. 
-                    Эти элементы могут быть установлены в положительные значения.
-                     */
-                    for (int i = 1; i < N; i += 2) // Нечетные строки
-                    {
-                        for (int j = 1; j < N; j += 2) // Нечетные столбцы
-                        {
-                            A[i, j] = 1; // Минимизируем вычисления, устанавливая значения в 1
-                        }
-                    }
-                    break;
+                // Создайте матрицу и инициализируйте её случайными числами (для примера)
+                int[,] A = new int[N, N];
+                Random random = new Random();
 
-                case ("Максимизация числа вычислений"):
-                    /*
-                     создаем матрицу случайных чисел, 
-                     а затем изменяем каждый элемент на главной 
-                     диагонали на случайное отрицательное число. 
-                     Это гарантирует, что алгоритм будет выполнять 
-                     максимальное количество сравнений отрицательных элементов 
-                     на главной диагонали и сумму элементов первой строки
-                    */
-                    for (int i = 0; i < N; i++)
-                    {
-                        for (int j = 0; j < N; j++)
-                        {
-                            A[i, j] = random.Next(-10, 10); // Генерация случайных чисел от -10 до 10
-                        }
-                    }
-
-                    // Заставим элементы на главной диагонали различаться
-                    for (int i = 0; i < N; i++)
-                    {
-                        A[i, i] = random.Next(-10, 0); // Генерация случайных отрицательных чисел
-                    }
-                    break;
-            }
-
-            // Подсчитайте количество положительных элементов
-            int count = 0;
-
-            for (int i = 1; i < N; i += 2) // Нечетные строки
-            {
-                for (int j = 1; j < N; j += 2) // Нечетные столбцы
+                switch (comboBox1.Text)
                 {
-                    if (A[i, j] > 0)
+                    case ("Случайное формирование данных"):
+                        for (int i = 0; i < N; i++)
+                        {
+                            for (int j = 0; j < N; j++)
+                            {
+                                A[i, j] = random.Next(int.MinValue, int.MaxValue); // Генерируйте случайные числа от -10 до 10
+                            }
+                        }
+                        break;
+
+                    case ("Минимизация числа вычислений"):
+                        /*
+                        создаем матрицу, в которой все элементы равны 0, 
+                        за исключением элементов,
+                        стоящих на пересечении нечетных строк и столбцов. 
+                        Эти элементы могут быть установлены в положительные значения.
+                         */
+                        for (int i = 1; i < N; i += 2) // Нечетные строки
+                        {
+                            for (int j = 1; j < N; j += 2) // Нечетные столбцы
+                            {
+                                A[i, j] = 1; // Минимизируем вычисления, устанавливая значения в 1
+                            }
+                        }
+                        break;
+
+                    case ("Максимизация числа вычислений"):
+                        /*
+                         создаем матрицу случайных чисел, 
+                         а затем изменяем каждый элемент на главной 
+                         диагонали на случайное отрицательное число. 
+                         Это гарантирует, что алгоритм будет выполнять 
+                         максимальное количество сравнений отрицательных элементов 
+                         на главной диагонали и сумму элементов первой строки
+                        */
+                        for (int i = 0; i < N; i++)
+                        {
+                            for (int j = 0; j < N; j++)
+                            {
+                                A[i, j] = random.Next(1, int.MaxValue); // Генерация случайных чисел от -10 до 10
+                            }
+                        }
+                        break;
+                }
+
+                // Подсчет количества положительных элементов
+                int count = 0;
+
+                // Засекаем начальное время
+                stopwatch.Restart();
+                for (int i = 1; i < N; i += 2) // Нечетные строки
+                {
+                    for (int j = 1; j < N; j += 2) // Нечетные столбцы
                     {
-                        count++;
+                        if (A[i, j] > 0)
+                        {
+                            count++;
+                        }
                     }
                 }
-            }
+                // Засекаем конечное время
+                stopwatch.Stop();
 
-            label3.Text = count.ToString();
+                label3.Text = count.ToString();
+
+                double milliseconds = stopwatch.Elapsed.TotalMilliseconds;
+                chart1.Series[0].Points.AddXY(N, milliseconds);
+                chart1.Update();
+            }
+        }
+
+        void sequence()
+        {
+            chart1.Series[0].Points.Clear();
+
+            for (int n = 1000000; n <= 10000000; n += 1000000)
+            {
+                Random random = new Random();
+                int[] sequence = new int[n];
+
+                switch (comboBox1.Text)
+                {
+                    case ("Случайное формирование данных"):
+                        // Заполняем массив случайными числами (включая отрицательные)
+                        for (int i = 0; i < sequence.Length; i++)
+                        {
+                            sequence[i] = random.Next(int.MinValue, int.MaxValue);
+                        }
+                        break;
+
+                    case ("Минимизация числа вычислений"):
+                        for (int i = 0; i < sequence.Length; i++)
+                        {
+                            sequence[i] = random.Next(int.MinValue, -1);
+                        }
+                        sequence[sequence.Length - 1] = 0;
+                        break;
+
+                    case ("Максимизация числа вычислений"):
+                        for (int i = 0; i < sequence.Length; i++)
+                        {
+                            sequence[i] = 1;
+                        }
+                        sequence[sequence.Length - 1] = 0;
+                        break;
+                }
+
+                int pr = 1;
+                int maxElement = sequence[0]; // Инициализируем максимальный элемент первым элементом
+
+                bool foundZero = false;
+
+                int IndexMax = 0;
+
+                // Засекаем начальное время
+                var stopwatch = new Stopwatch();
+                stopwatch.Restart();
+                for (int i = 0; i < sequence.Length; i++)
+                {
+                    if (sequence[i] == 0)
+                    {
+                        foundZero = true;
+                        break;
+                    }
+
+                    if (sequence[i] > 0)
+                    {
+                        pr *= sequence[i];
+                    }
+
+                    if (sequence[i] > maxElement)
+                    {
+                        maxElement = sequence[i];
+                        IndexMax = i;
+                    }
+                }
+                
+                if (foundZero)
+                {
+                    sequence[IndexMax] = pr;
+                }
+                // Засекаем конечное время
+                stopwatch.Stop();
+
+                label3.Text = sequence[IndexMax].ToString();
+
+                double milliseconds = stopwatch.Elapsed.TotalMilliseconds;
+                chart1.Series[0].Points.AddXY(n, milliseconds);
+                chart1.Update();
+            }            
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -112,6 +202,11 @@ namespace Algor_Labs1
         private void button1_Click(object sender, EventArgs e)
         {
             matrix_count();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            sequence();
         }
     }
 }
