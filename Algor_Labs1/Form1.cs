@@ -59,11 +59,11 @@ namespace Algor_Labs1
                         стоящих на пересечении нечетных строк и столбцов. 
                         Эти элементы могут быть установлены в положительные значения.
                          */
-                        for (int i = 1; i < N; i += 2) // Нечетные строки
+                        for (int i = 0; i < N; i++)
                         {
-                            for (int j = 1; j < N; j += 2) // Нечетные столбцы
+                            for (int j = 0; j < N; j++)
                             {
-                                A[i, j] = 1; // Минимизируем вычисления, устанавливая значения в 1
+                                A[i, j] = -1;
                             }
                         }
                         break;
@@ -108,7 +108,7 @@ namespace Algor_Labs1
                 label3.Text = count.ToString();
 
                 double milliseconds = stopwatch.Elapsed.TotalMilliseconds;
-                chart1.Series[0].Points.AddXY(N, milliseconds);
+                chart1.Series[0].Points.AddXY(N * N, milliseconds);
                 chart1.Update();
             }
         }
@@ -117,10 +117,10 @@ namespace Algor_Labs1
         {
             chart1.Series[0].Points.Clear();
 
-            for (int n = 1000000; n <= 10000000; n += 1000000)
+            for (int n = 1000000; n <= 10000000; n += 100000)
             {
                 Random random = new Random();
-                int[] sequence = new int[n];
+                double[] sequence = new double[n];
 
                 switch (comboBox1.Text)
                 {
@@ -128,14 +128,14 @@ namespace Algor_Labs1
                         // Заполняем массив случайными числами (включая отрицательные)
                         for (int i = 0; i < sequence.Length; i++)
                         {
-                            sequence[i] = random.Next(int.MinValue, int.MaxValue);
+                            sequence[i] = random.NextDouble() * 2.2 - 1.1; // от -1.1 до 1.1
                         }
                         break;
 
                     case ("Минимизация числа вычислений"):
                         for (int i = 0; i < sequence.Length; i++)
                         {
-                            sequence[i] = random.Next(int.MinValue, -1);
+                            sequence[i] = random.NextDouble() - 1.3; // отрицательные числа от -1.3 до -0.3
                         }
                         sequence[sequence.Length - 1] = 0;
                         break;
@@ -143,14 +143,14 @@ namespace Algor_Labs1
                     case ("Максимизация числа вычислений"):
                         for (int i = 0; i < sequence.Length; i++)
                         {
-                            sequence[i] = 1;
+                            sequence[i] = random.NextDouble() + 0.3; // положительные числа от 0.3 до 1.3
                         }
                         sequence[sequence.Length - 1] = 0;
                         break;
                 }
 
-                int pr = 1;
-                int maxElement = sequence[0]; // Инициализируем максимальный элемент первым элементом
+                double pr = 1;
+                double maxElement = sequence[0]; // Инициализируем максимальный элемент первым элементом
 
                 bool foundZero = false;
 
